@@ -25,7 +25,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { KeyRound, Megaphone, Settings, LogOut, Plus, Ban, CheckCircle, Trash2, Eye, EyeOff, Copy, Download } from "lucide-react"
+import { KeyRound, Megaphone, Settings, LogOut, Plus, Ban, CheckCircle, Trash2, Eye, EyeOff, Copy, Download, FileCode } from "lucide-react"
+import Link from "next/link"
 
 interface LicenseKey {
   id: string
@@ -305,16 +306,24 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <h1 className="text-xl font-bold">卡密管理系统</h1>
-          <Button variant="ghost" onClick={handleLogout}>
-            <LogOut className="h-4 w-4 mr-2" />
-            退出登录
-          </Button>
-        </div>
-      </header>
+  <div className="min-h-screen bg-background">
+  <header className="border-b">
+  <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+> <h1 className="text-xl font-bold">卡密管理系统</h1>
+  <div className="flex items-center gap-2">
+  <Link href="/docs">
+    <Button variant="outline" size="sm">
+      <FileCode className="h-4 w-4 mr-2" />
+      API 文档
+    </Button>
+  </Link>
+  <Button variant="ghost" onClick={handleLogout}>
+  <LogOut className="h-4 w-4 mr-2" />
+> 退出登录
+  </Button>
+  </div>
+  </div>
+  </header>
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="keys" className="space-y-6">
