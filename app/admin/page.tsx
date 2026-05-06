@@ -26,7 +26,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { KeyRound, Megaphone, Settings, LogOut, Plus, Ban, CheckCircle, Trash2, Eye, EyeOff, Copy, Download, FileCode } from "lucide-react"
-import Link from "next/link"
 
 interface LicenseKey {
   id: string
@@ -306,28 +305,20 @@ export default function AdminPage() {
   }
 
   return (
-  <div className="min-h-screen bg-background">
-  <header className="border-b">
-  <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-> <h1 className="text-xl font-bold">卡密管理系统</h1>
-  <div className="flex items-center gap-2">
-  <Link href="/docs">
-    <Button variant="outline" size="sm">
-      <FileCode className="h-4 w-4 mr-2" />
-      API 文档
-    </Button>
-  </Link>
-  <Button variant="ghost" onClick={handleLogout}>
-    <LogOut className="h-4 w-4 mr-2" />
-    退出登录
-  </Button>
-  </div>
-  </div>
-  </header>
+    <div className="min-h-screen bg-background">
+      <header className="border-b">
+        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
+          <h1 className="text-xl font-bold">卡密管理系统</h1>
+          <Button variant="ghost" onClick={handleLogout}>
+            <LogOut className="h-4 w-4 mr-2" />
+            退出登录
+          </Button>
+        </div>
+      </header>
 
       <main className="container mx-auto px-4 py-6">
         <Tabs defaultValue="keys" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
             <TabsTrigger value="keys" className="gap-2">
               <KeyRound className="h-4 w-4" />
               <span className="hidden sm:inline">卡密管理</span>
@@ -339,6 +330,10 @@ export default function AdminPage() {
             <TabsTrigger value="settings" className="gap-2">
               <Settings className="h-4 w-4" />
               <span className="hidden sm:inline">系统设置</span>
+            </TabsTrigger>
+            <TabsTrigger value="api" className="gap-2">
+              <FileCode className="h-4 w-4" />
+              <span className="hidden sm:inline">API 文档</span>
             </TabsTrigger>
           </TabsList>
 
@@ -667,6 +662,173 @@ export default function AdminPage() {
                   <p className="text-sm text-muted-foreground">
                     需要管理员登录，请求体: {"{"}&quot;count&quot;: 数量, &quot;duration_days&quot;: 天数, &quot;prefix&quot;: &quot;前缀&quot;{"}"}
                   </p>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* API 文档 */}
+          <TabsContent value="api" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>API 接口文档</CardTitle>
+                <CardDescription>供脚本调用的 API 接口说明</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                {/* 公告 API */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">1. 公告 API</h3>
+                  <div className="bg-muted p-4 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">GET</Badge>
+                      <code className="text-sm font-mono">/api/announcement</code>
+                    </div>
+                    <p className="text-sm text-muted-foreground">获取当前活跃的公告列表</p>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">响应示例：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "success": true,
+  "announcements": [
+    {
+      "id": "uuid",
+      "title": "公告标题",
+      "content": "公告内容",
+      "created_at": "2024-01-01T00:00:00Z"
+    }
+  ]
+}`}
+                      </pre>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 卡密验证 API */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">2. 卡密验证 API</h3>
+                  <div className="bg-muted p-4 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge>POST</Badge>
+                      <code className="text-sm font-mono">/api/verify</code>
+                    </div>
+                    <p className="text-sm text-muted-foreground">验证卡密是否有效，自动检测 IP 和机器码</p>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">请求参数：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "key_code": "卡密代码",
+  "machine_code": "机器码（可选，首次激活后必须一致）"
+}`}
+                      </pre>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">成功响应：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "success": true,
+  "message": "验证成功",
+  "data": {
+    "status": "active",
+    "expires_at": "2024-02-01T00:00:00Z",
+    "remaining_days": 30
+  }
+}`}
+                      </pre>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">错误响应：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "success": false,
+  "error": "卡密已被禁用",
+  "code": "KEY_BANNED"
+}`}
+                      </pre>
+                    </div>
+                    <div className="mt-3 p-3 bg-destructive/10 rounded">
+                      <p className="text-sm text-destructive font-medium">安全机制：</p>
+                      <ul className="text-xs text-muted-foreground mt-1 space-y-1">
+                        <li>• 首次激活时记录 IP 和机器码</li>
+                        <li>• 后续验证时自动比对，不匹配则自动禁用</li>
+                        <li>• 过期卡密会返回 KEY_EXPIRED 错误</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 生成卡密 API */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">3. 生成卡密 API</h3>
+                  <div className="bg-muted p-4 rounded-lg space-y-2">
+                    <div className="flex items-center gap-2">
+                      <Badge>POST</Badge>
+                      <code className="text-sm font-mono">/api/generate</code>
+                    </div>
+                    <p className="text-sm text-muted-foreground">生成新的卡密（需要管理员登录）</p>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">请求参数：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "count": 10,
+  "duration_days": 30,
+  "prefix": "VIP"
+}`}
+                      </pre>
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-sm font-medium mb-1">响应示例：</p>
+                      <pre className="bg-background p-3 rounded text-xs overflow-x-auto">
+{`{
+  "success": true,
+  "keys": [
+    "VIP-XXXX-XXXX-XXXX",
+    "VIP-YYYY-YYYY-YYYY"
+  ]
+}`}
+                      </pre>
+                    </div>
+                    <div className="mt-3 p-3 bg-yellow-500/10 rounded">
+                      <p className="text-sm text-yellow-600 font-medium">注意：</p>
+                      <p className="text-xs text-muted-foreground mt-1">此接口需要管理员登录后才能调用</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 错误码说明 */}
+                <div className="space-y-3">
+                  <h3 className="text-lg font-semibold text-primary">4. 错误码说明</h3>
+                  <div className="bg-muted p-4 rounded-lg">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>错误码</TableHead>
+                          <TableHead>说明</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell><code className="text-xs">KEY_NOT_FOUND</code></TableCell>
+                          <TableCell className="text-sm">卡密不存在</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><code className="text-xs">KEY_BANNED</code></TableCell>
+                          <TableCell className="text-sm">卡密已被禁用</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><code className="text-xs">KEY_EXPIRED</code></TableCell>
+                          <TableCell className="text-sm">卡密已过期</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><code className="text-xs">MACHINE_MISMATCH</code></TableCell>
+                          <TableCell className="text-sm">机器码不匹配（已自动禁用）</TableCell>
+                        </TableRow>
+                        <TableRow>
+                          <TableCell><code className="text-xs">IP_MISMATCH</code></TableCell>
+                          <TableCell className="text-sm">IP 不匹配（已自动禁用）</TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </div>
                 </div>
               </CardContent>
             </Card>
