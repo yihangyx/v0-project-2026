@@ -19,6 +19,8 @@ export async function POST(request: NextRequest) {
     // 检查管理员登录状态
     const cookieStore = await cookies()
     const adminToken = cookieStore.get("admin_token")?.value
+    
+    console.log("[v0] Generate API - admin_token:", adminToken)
 
     if (!adminToken || adminToken !== "authenticated") {
       return NextResponse.json({ success: false, message: "未授权访问" }, { status: 401 })
