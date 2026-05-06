@@ -77,7 +77,7 @@ export default function AdminPage() {
   const [selectedKeyId, setSelectedKeyId] = useState<string | null>(null)
 
   const fetchKeys = useCallback(async () => {
-    const res = await fetch("/api/admin/keys")
+    const res = await fetch("/api/admin/keys", { credentials: "include" })
     const data = await res.json()
     if (data.success) {
       setKeys(data.data)
@@ -85,7 +85,7 @@ export default function AdminPage() {
   }, [])
 
   const fetchAnnouncements = useCallback(async () => {
-    const res = await fetch("/api/admin/announcements")
+    const res = await fetch("/api/admin/announcements", { credentials: "include" })
     const data = await res.json()
     if (data.success) {
       setAnnouncements(data.data)
@@ -95,7 +95,7 @@ export default function AdminPage() {
   useEffect(() => {
     // 检查登录状态
     const checkAuth = async () => {
-      const res = await fetch("/api/admin/keys")
+      const res = await fetch("/api/admin/keys", { credentials: "include" })
       if (res.ok) {
         setIsLoggedIn(true)
         fetchKeys()
@@ -113,6 +113,7 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ password }),
     })
 
@@ -130,7 +131,7 @@ export default function AdminPage() {
   }
 
   const handleLogout = async () => {
-    await fetch("/api/admin/logout", { method: "POST" })
+    await fetch("/api/admin/logout", { method: "POST", credentials: "include" })
     setIsLoggedIn(false)
     setKeys([])
     setAnnouncements([])
@@ -138,22 +139,30 @@ export default function AdminPage() {
 
   const handleGenerateKeys = async () => {
     setLoading(true)
-    const res = await fetch("/api/generate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        count: generateCount,
-        duration_days: generateDays,
-        prefix: generatePrefix,
-      }),
-    })
+    try {
+      const res = await fetch("/api/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          count: generateCount,
+          duration_days: generateDays,
+          prefix: generatePrefix,
+        }),
+      })
 
-    const data = await res.json()
-    setLoading(false)
+      const data = await res.json()
+      setLoading(false)
 
-    if (data.success) {
-      setGeneratedKeys(data.data)
-      fetchKeys()
+      if (data.success) {
+        setGeneratedKeys(data.data)
+        fetchKeys()
+      } else {
+        alert(data.message || "生成失败")
+      }
+    } catch (error) {
+      setLoading(false)
+      alert("生成卡密失败，请重试")
     }
   }
 
@@ -161,6 +170,7 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/keys", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ id, action, reason }),
     })
 
@@ -178,6 +188,7 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/announcements", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ title: newTitle, content: newContent }),
     })
 
@@ -192,13 +203,14 @@ export default function AdminPage() {
     await fetch("/api/admin/announcements", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ id, is_active: !is_active }),
     })
     fetchAnnouncements()
   }
 
   const handleDeleteAnnouncement = async (id: string) => {
-    await fetch(`/api/admin/announcements?id=${id}`, { method: "DELETE" })
+    await fetch(`/api/admin/announcements?id=${id}`, { method: "DELETE", credentials: "include" })
     fetchAnnouncements()
   }
 
@@ -215,6 +227,7 @@ export default function AdminPage() {
     const res = await fetch("/api/admin/password", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+      credentials: "include",
       body: JSON.stringify({ new_password: newPassword }),
     })
 
@@ -651,7 +664,7 @@ export default function AdminPage() {
                     POST /api/verify
                   </code>
                   <p className="text-sm text-muted-foreground">
-                    请求体: {"{"}&quot;key_code&quot;: &quot;卡密&quot;, &quot;machine_code&quot;: &quot;机器码&quot;{"}"}
+                    请��体: {"{"}&quot;key_code&quot;: &quot;卡密&quot;, &quot;machine_code&quot;: &quot;机器码&quot;{"}"}
                   </p>
                 </div>
                 <div className="space-y-2">
