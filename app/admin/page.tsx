@@ -318,8 +318,8 @@ export default function AdminPage() {
     </Button>
   </Link>
   <Button variant="ghost" onClick={handleLogout}>
-  <LogOut className="h-4 w-4 mr-2" />
-> 退出登录
+    <LogOut className="h-4 w-4 mr-2" />
+    退出登录
   </Button>
   </div>
   </div>
