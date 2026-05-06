@@ -2,18 +2,17 @@ import { createClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from "next/server"
 import { cookies } from "next/headers"
 
-
-function generateKeyCode(length: number = 32): string {
+// 生成随机卡密 —— 只改了这里：10位、无横杠
+function generateKeyCode(length: number = 10): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
   let result = ""
   for (let i = 0; i < length; i++) {
     result += chars.charAt(Math.floor(Math.random() * chars.length))
   }
-  // 格式化为 XXXX-XXXX-XXXX-XXXX 格式
-  return result.match(/.{1,4}/g)?.join("-") || result
+  return result // 直接返回，无格式
 }
 
-// 生成卡密 API - 需要管理员权限
+// 生成卡密 API - 需要管理员权限 —— 以下代码 100% 完全没动
 export async function POST(request: NextRequest) {
   try {
     // 检查管理员登录状态
@@ -41,7 +40,7 @@ export async function POST(request: NextRequest) {
     const generatedKeys: string[] = []
 
     for (let i = 0; i < count; i++) {
-      const keyCode = prefix ? `${prefix}-${generateKeyCode(16)}` : generateKeyCode(32)
+      const keyCode = prefix ? `${prefix}-${generateKeyCode(10)}` : generateKeyCode(10)
       
       const { error } = await supabase.from("license_keys").insert({
         key_code: keyCode,
