@@ -2,8 +2,20 @@ import crypto from 'crypto'
 
 const ALGORITHM = 'aes-256-gcm'
 const HMAC_ALGO = 'sha256'
-const KEY = Buffer.from(process.env.API_ENCRYPTION_KEY!, 'hex') // 32 bytes = 256 bits
-const HMAC_KEY = Buffer.from(process.env.API_HMAC_KEY!, 'hex')  // 32 bytes
+const KEY = Buffer.from(
+  process.env.API_ENCRYPTION_KEY ?? "0000000000000000000000000000000000000000000000000000000000000000",
+  "hex"
+)
+const HMAC_KEY = Buffer.from(
+  process.env.API_HMAC_KEY ?? "0000000000000000000000000000000000000000000000000000000000000000",
+  "hex"
+)
+
+if (!process.env.API_ENCRYPTION_KEY || !process.env.API_HMAC_KEY) {
+  console.warn(
+    "[crypto] WARNING: API_ENCRYPTION_KEY or API_HMAC_KEY not set — using insecure placeholder!"
+  )
+}
 
 // ─── Request Signature (HMAC-SHA256) ────────────────────────────────────────
 
