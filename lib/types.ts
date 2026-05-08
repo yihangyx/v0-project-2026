@@ -43,11 +43,11 @@ export const VerifyErrorResponseSchema = z.object({
 })
 
 export const AnnouncementSchema = z.object({
-  id: z.number().int().positive(),
+  id: z.union([z.string(), z.number()]),       // UUID string or number from Supabase
   title: z.string(),
   content: z.string(),
-  // Accept both ISO datetime strings (Postgres) and Unix timestamps (Supabase integer columns)
-  created_at: z.union([z.string().datetime(), z.number()]),
+  // Accept ISO datetime strings and Unix timestamps (Supabase integer columns)
+  created_at: z.union([z.string(), z.number()]),
 })
 
 export const AnnouncementListResponseSchema = z.object({
