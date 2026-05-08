@@ -32,7 +32,8 @@ export async function GET() {
     return NextResponse.json(sealedResponse(res), {
       headers: { "Cache-Control": "public, max-age=300" },
     })
-  } catch {
+  } catch (err) {
+    console.error("[/api/announcement]", err)
     return NextResponse.json(sealedResponse({
       success: false,
       message: "服务器错误",

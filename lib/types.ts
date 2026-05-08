@@ -46,7 +46,8 @@ export const AnnouncementSchema = z.object({
   id: z.number().int().positive(),
   title: z.string(),
   content: z.string(),
-  created_at: z.string().datetime(),
+  // Accept both ISO datetime strings (Postgres) and Unix timestamps (Supabase integer columns)
+  created_at: z.union([z.string().datetime(), z.number()]),
 })
 
 export const AnnouncementListResponseSchema = z.object({
